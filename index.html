@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <!-- Türkçe karakterler bozulmasın -->
+  <meta charset="utf-8" />
+  <!-- Mobil uyum zorunlu -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Enise Pasta&Cafe</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <style>
+    /*
+      :root = tek yerden yönetilen renk/ölçü değişkenleri.
+      Burayı değiştirince tüm tasarım etkilenir.
+    */
+    :root{
+      --bg:#fff8ea;      /* arka plan */
+      --text:#111;       /* ana yazı */
+      --muted:#6b6b6b;   /* açıklama yazısı */
+      --line:#111;       /* başlık çizgisi */
+      --radius:22px;     /* kart köşeleri */
+      --max:980px;       /* max genişlik */
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;} /* kategoriye tıklayınca yumuşak kaydır */
+
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    a{color:inherit;text-decoration:none}
+
+    /* İçerikleri ortalayan kapsayıcı */
+    .wrap{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:18px 16px 44px;
+    }
+
+    /* Üstteki marka yazısı */
+    .brand{text-align:center;margin:8px 0 18px;}
+    .brand .logo{
+      font-family:"Brush Script MT","Apple Chancery",cursive;
+      font-size:46px;
+      line-height:1;
+      margin:0;
+    }
+
+    /* Ana menü kategori kartları: 2 sütun */
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px;
+      margin:10px 0 26px;
+    }
+
+    /* Kategori kartı */
+    .cat{
+      position:relative;
+      border-radius:var(--radius);
+      overflow:hidden;
+      aspect-ratio:1.35 / 1;   /* kart boyut oranı */
+      background:#ddd;
+    }
+    .cat img{
+      width:100%;
+      height:100%;
+      object-fit:cover; /* resmi esnetmez, kırparak doldurur */
+      display:block;
+    }
+
+    /* Kart üzerindeki kategori yazısı */
+    .cat .label{
+      position:absolute;
+      left:14px;
+      bottom:12px;
+      font-weight:900;
+      font-size:22px;
+      color:#fff;
+      text-shadow:0 3px 10px rgba(0,0,0,.45);
+
+      /* uzun yazı taşmasın */
+      max-width:calc(100% - 28px);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    /* Kategori bölümü */
+    .section{margin:26px 0 8px;}
+    .section-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .section-title{
+      font-weight:900;
+      font-size:48px;
+      letter-spacing:-1px;
+      margin:0;
+    }
+    .toplink{
+      font-weight:800;
+      color:#c9bea8;
+      font-size:18px;
+      padding-bottom:10px;
+    }
+    .rule{height:4px;background:var(--line);margin:10px 0 12px;}
+
+    /* Ürün satırı */
+    .item{
+      display:flex;
+      align-items:flex-start;
+      gap:18px;
+      padding:14px 0;
+      border-bottom:2px dashed rgba(0,0,0,.18);
+    }
+    .thumb{
+      width:128px;
+      height:98px;
+      border-radius:18px;
+      overflow:hidden;
+      flex:0 0 auto;
+      background:#000;
+    }
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .info{flex:1 1 auto;min-width:0;}
+    .name{font-weight:900;font-size:22px;margin:0 0 4px;}
+    .desc{margin:0 0 10px;color:var(--muted);font-size:16px;}
+    .price{font-weight:900;font-size:22px;margin:0;}
+
+    .empty-note{
+      color:var(--muted);
+      padding:10px 0 0;
+      font-size:15px;
+    }
+    /* ÜRÜN RESMİ TIKLANABİLİR OLSUN */
+.thumb img{
+  cursor:pointer;
+}
+
+/* RESİM BÜYÜTME POPUP */
+.img-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:rgba(0,0,0,.82);
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.img-modal.show{
+  display:flex;
+}
+
+.img-modal-content{
+  max-width:90%;
+  max-height:90%;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+    /* Mobil */
+    @media (max-width:520px){
+      .section-title{font-size:44px}
+      .thumb{width:112px;height:86px}
+      .name{font-size:20px}
+      .price{font-size:20px}
+      .grid{gap:14px}
+      .cat .label{font-size:20px}
+    }
+  </style>
+</head>
+
+<body id="top">
+  <div class="wrap">
+
+    <!-- Üst başlık / marka adı -->
+    <div class="brand">
+      <h1 class="logo">Enise Pasta&amp;Cafe</h1>
+    </div>
+
+    <!-- Kategori kartları buraya otomatik basılır -->
+    <div class="grid" id="categoryGrid"></div>
+
+    <!-- Kategori bölümleri + ürünler buraya otomatik basılır -->
+    <div id="menuSections"></div>
+
+  </div>
+
+  <script>
+    /*
+      ✅ Google Sheet CSV linkin
+      (Sheet’te güncelleme -> siteyi yenile -> menü güncellenir)
+    */
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQL6TYFQG53aQeZNVyaAyT7EsZfLAF917h6odJynhaZtiWeUIizbIjwehu61I5EI6HTsYcFoxvTzW3_/pub?gid=0&single=true&output=csv";
+
+    /*
+      ✅ Menüde sabit görmek istediğin 22 kategori (sıra sabit)
+    */
+    const CATEGORY_ORDER = [
+      "Çorbalar",
+      "Kahvaltılar",
+      "Omlet ve Sahanda Yumurtalar",
+      "Sandviçler",
+      "Menemenler",
+      "Gözlemeler",
+      "Tostlar",
+      "Atıştırmalıklar",
+      "Burgerler",
+      "Makarnalar",
+      "Salatalar",
+      "Bowl",
+      "Balıklar",
+      "Tavuk yemekleri",
+      "Et yemekleri",
+      "Baklavalar",
+      "Tatlılar",
+      "Kahveler",
+      "Milkshake ve soğuk kahveler",
+      "Soğuk içecekler",
+      "Sıcak içecekler",
+      "Extra ürünler"
+    ];
+
+    /*
+      Resim boşsa kullanılacak yedek görsel
+      (Sheet'te ResimUrl boşsa ekran kırılmasın diye)
+    */
+    const FALLBACK_IMG = "https://lh3.googleusercontent.com/d/1ZzTArsySsRjecAJHqedMi0ZVCVXCUnfx";
+
+    /*
+      Türkçe karakter -> ID
+      Örn: "Soğuk içecekler" -> "soguk-icecekler"
+    */
+    function slugifyTR(s){
+      return String(s).toLowerCase()
+        .replaceAll("ı","i").replaceAll("ğ","g").replaceAll("ü","u")
+        .replaceAll("ş","s").replaceAll("ö","o").replaceAll("ç","c")
+        .replace(/[^a-z0-9]+/g,"-")
+        .replace(/^-+|-+$/g,"");
+    }
+
+    /*
+      Fiyatı otomatik TL yapar:
+      - Sheet'te "250" yazarsan -> "250 TL"
+      - "250 TL" yazarsan -> aynen kalır
+    */
+    function formatPrice(v){
+      const s = (v || "").toString().trim();
+      if(!s) return "";
+      if(/tl/i.test(s)) return s;
+      if(/^\d+([.,]\d+)?$/.test(s)) return s.replace(",", ".") + " TL";
+      return s;
+    }
+
+    /*
+      CSV okuma:
+      - Ayırıcıyı otomatik seçer (, veya ;)
+      - Basit tırnak desteği var ("")
+    */
+    function parseCSV(text){
+      const lines = text.replace(/\r/g,"").trim().split("\n");
+      if(!lines.length) return [];
+      const first = lines[0] || "";
+      const delim = (first.includes(";") && !first.includes(",")) ? ";" : ",";
+
+      const out = [];
+      for(const line of lines){
+        const row = [];
+        let cur = "";
+        let inQuotes = false;
+
+        for(let i=0;i<line.length;i++){
+          const ch = line[i];
+          if(ch === '"'){
+            if(inQuotes && line[i+1] === '"'){ cur += '"'; i++; }
+            else inQuotes = !inQuotes;
+          } else if(ch === delim && !inQuotes){
+            row.push(cur.trim()); cur = "";
+          } else {
+            cur += ch;
+          }
+        }
+        row.push(cur.trim());
+        out.push(row);
+      }
+      return out;
+    }
+
+    /*
+      Başlık (kolon adı) eşleştirme için normalleştirme.
+      Örn: "Ürün adı" / "UrunAdi" / "urunadi" aynı kabul edilir.
+    */
+    function normHeader(s){
+      return slugifyTR(String(s)).replaceAll("-","");
+    }
+
+    /*
+      Kolon index bulucu: birden fazla olası ismi destekler.
+    */
+    function findColIndex(headers, candidates){
+      const H = headers.map(normHeader);
+      for(const c of candidates){
+        const idx = H.indexOf(normHeader(c));
+        if(idx !== -1) return idx;
+      }
+      return -1;
+    }
+    /* ÜRÜN RESMİ BÜYÜTME */
+function bindImageModal(){
+  const modal = document.getElementById("imgModal");
+  const modalImg = document.getElementById("imgModalImage");
+
+  document.querySelectorAll(".thumb img").forEach(img => {
+    img.addEventListener("click", () => {
+      modal.classList.add("show");
+      modalImg.src = img.src;
+    });
+  });
+
+  // Siyah alanın dışına basınca kapat
+  modal.addEventListener("click", (e) => {
+    if(e.target === modal){
+      modal.classList.remove("show");
+      modalImg.src = "";
+    }
+  });
+}
+
+    (async function init(){
+      const grid = document.getElementById("categoryGrid");
+      const sections = document.getElementById("menuSections");
+
+      let csvText = "";
+      try{
+        const res = await fetch(CSV_URL, {cache:"no-store"});
+        csvText = await res.text();
+      }catch(e){
+        sections.innerHTML = `<p class="empty-note">CSV okunamadı. Live Server ile açtığından emin ol.</p>`;
+        return;
+      }
+
+      const rows = parseCSV(csvText);
+      if(rows.length < 2){
+        sections.innerHTML = `<p class="empty-note">Sheet boş görünüyor. En az 1 satır ürün olmalı.</p>`;
+        return;
+      }
+
+      const header = rows[0];
+      const data = rows.slice(1);
+
+      /*
+        Sheet'teki kolonları buluyoruz.
+        Senin "kapak" kısmın için: Tip kolonu önemli.
+      */
+      const iKat = findColIndex(header, ["Kategori", "Category"]);
+      const iTip = findColIndex(header, ["Tip", "Type"]); // ✅ kapak/urun burada
+      const iAd  = findColIndex(header, ["UrunAdi","ÜrünAdı","Urun Adi","Ürün adı","Urun","Ürün","Ad"]);
+      const iAc  = findColIndex(header, ["Aciklama","Açıklama","UrunAciklama","Ürün açıklaması","Detay"]);
+      const iFy  = findColIndex(header, ["Fiyat","Price"]);
+      const iRs  = findColIndex(header, ["ResimUrl","Resim","Gorsel","Görsel","Image","ImageUrl"]);
+
+      if(iKat === -1){
+        sections.innerHTML = `<p class="empty-note">Sheet’te <b>Kategori</b> kolonu bulunamadı. Kolon adını "Kategori" yap.</p>`;
+        return;
+      }
+      if(iTip === -1){
+        sections.innerHTML = `<p class="empty-note">Sheet’te <b>Tip</b> kolonu bulunamadı. "kapak" satırını ayırmak için Tip kolonu eklemelisin.</p>`;
+        return;
+      }
+
+      /*
+        Kategori -> ürün listesi map
+        Tip=kapak olan satır ÜRÜN OLARAK GÖSTERİLMEZ.
+      */
+      const map = new Map();
+      for(const r of data){
+        const kat = (r[iKat] || "").trim();
+        if(!kat) continue;
+
+        const tip = (r[iTip] || "urun").toLowerCase().trim(); // boşsa urun say
+        const item = {
+          tip,
+          ad:  iAd !== -1 ? (r[iAd] || "").trim() : "",
+          ac:  iAc !== -1 ? (r[iAc] || "").trim() : "",
+          fy:  iFy !== -1 ? (r[iFy] || "").trim() : "",
+          rs:  iRs !== -1 ? (r[iRs] || "").trim() : ""
+        };
+
+        if(!map.has(kat)) map.set(kat, []);
+        map.get(kat).push(item);
+      }
+
+      /*
+        22 kategoriyi sırasıyla basıyoruz (sıra bozulmasın diye)
+      */
+      for(const kat of CATEGORY_ORDER){
+        const id = slugifyTR(kat);
+        const items = map.get(kat) || [];
+
+        /* Kapak resmi: Tip=kapak olan satırın resmi */
+        const coverItem = items.find(x => x.tip === "kapak");
+        /* Kapak yoksa: ilk normal ürünün resmini al */
+        const firstProduct = items.find(x => x.tip !== "kapak");
+        const coverImg = (coverItem?.rs || firstProduct?.rs || FALLBACK_IMG);
+
+        /* Ana menü kartını bas */
+        grid.insertAdjacentHTML("beforeend", `
+          <a class="cat" href="#${id}">
+            <img src="${coverImg}" alt="">
+            <div class="label">${kat}</div>
+          </a>
+        `);
+
+        /* Ürünleri bas (kapak satırı ürünlerden çıkarılır) */
+        const productItems = items.filter(x => x.tip !== "kapak");
+
+        let htmlItems = "";
+        if(productItems.length === 0){
+          htmlItems = `<div class="empty-note">Bu kategoride henüz ürün yok.</div>`;
+        } else {
+          for(const it of productItems){
+            const img = it.rs || FALLBACK_IMG;
+            htmlItems += `
+              <div class="item">
+                <div class="thumb"><img src="${img}" alt=""></div>
+                <div class="info">
+                  <p class="name">${it.ad || ""}</p>
+                  ${it.ac ? `<p class="desc">${it.ac}</p>` : ``}
+                  <p class="price">${formatPrice(it.fy)}</p>
+                </div>
+              </div>
+            `;
+          }
+        }
+
+        /* Kategori bölümünü bas */
+        sections.insertAdjacentHTML("beforeend", `
+          <section class="section" id="${id}">
+            <div class="section-head">
+              <h2 class="section-title">${kat}</h2>
+              <a class="toplink" href="#top">AnaMenü</a>
+            </div>
+            <div class="rule"></div>
+            ${htmlItems}
+          </section>
+        `);
+      }
+      bindImageModal();
+    })();
+  </script>
+  <script>
+  // URL'deki #kategori kısmını temizler (tasarım daha temiz görünür)
+  window.addEventListener("hashchange", () => {
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+  });
+
+  // Sayfa açılırken de hash varsa temizle
+  window.addEventListener("load", () => {
+    if (window.location.hash) {
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+  });
+</script>
+<!-- RESİM BÜYÜTME POPUP -->
+<div id="imgModal" class="img-modal">
+  <img id="imgModalImage" class="img-modal-content" src="" alt="">
+</div>
+</body>
+
+</html>
