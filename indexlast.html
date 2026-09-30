@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fff8ea" />
+  <title>Enise Pasta &amp; Cafe | Menü</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    :root {
+      --bg: #fff8ea;
+      --surface: #fffdf7;
+      --text: #241b18;
+      --muted: #625751;
+      --accent: #783f32;
+      --line: #3d2922;
+      --border: #e4d8c7;
+      --radius: 18px;
+      --max: 980px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.5;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 20px 18px 48px; }
+    .brand { text-align: center; margin: 8px 0 24px; }
+    .brand .logo {
+      margin: 0;
+      color: var(--accent);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 7vw, 42px);
+      font-weight: 700;
+      letter-spacing: -.8px;
+      line-height: 1.15;
+    }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 12px 0 24px; }
+    .cat { position: relative; display: block; overflow: hidden; aspect-ratio: 1.55 / 1; border-radius: var(--radius); background: #ded3c5; }
+    .cat::after { content: ""; position: absolute; inset: 35% 0 0; background: linear-gradient(transparent, rgba(22, 13, 10, .78)); }
+    .cat img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .25s ease; }
+    .cat:hover img, .cat:focus-visible img { transform: scale(1.035); }
+    .cat .label { position: absolute; z-index: 1; left: 14px; right: 14px; bottom: 11px; color: #fff; font-size: clamp(15px, 3.8vw, 20px); font-weight: 800; line-height: 1.2; text-shadow: 0 1px 4px rgba(0,0,0,.4); }
+    .category-nav {
+      position: sticky; top: 0; z-index: 10; display: flex; gap: 8px; overflow-x: auto;
+      margin: 0 -18px 28px; padding: 12px 18px; background: rgba(255, 248, 234, .96);
+      border-top: 1px solid rgba(228,216,199,.75); border-bottom: 1px solid var(--border);
+      scrollbar-width: thin; -webkit-overflow-scrolling: touch; backdrop-filter: blur(10px);
+    }
+    .category-nav a { flex: 0 0 auto; padding: 8px 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: #493a33; font-size: 14px; font-weight: 700; white-space: nowrap; }
+    .category-nav a[aria-current="location"] { color: #fff; background: var(--accent); border-color: var(--accent); }
+    .section { margin: 30px 0 8px; scroll-margin-top: 78px; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .section-title { margin: 0; font-size: clamp(27px, 6vw, 36px); line-height: 1.15; letter-spacing: -.7px; font-weight: 850; }
+    .toplink { flex: 0 0 auto; color: #633126; font-size: 14px; font-weight: 800; padding: 8px 0 8px 8px; text-decoration: underline; text-underline-offset: 3px; }
+    .rule { height: 3px; margin: 10px 0 8px; background: var(--line); border-radius: 3px; }
+    .item { display: flex; align-items: flex-start; gap: 16px; padding: 14px 0; border-bottom: 1px dashed #cfc0ae; }
+    .thumb { width: 116px; height: 92px; flex: 0 0 auto; padding: 0; overflow: hidden; border: 0; border-radius: 14px; background: #e6ded2; cursor: zoom-in; }
+    .thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .info { flex: 1 1 auto; min-width: 0; }
+    .name { margin: 0 0 4px; font-size: 19px; line-height: 1.3; font-weight: 800; }
+    .desc { margin: 0 0 8px; color: var(--muted); font-size: 15px; }
+    .price { margin: 0; color: var(--accent); font-size: 19px; font-weight: 850; }
+    .status { padding: 20px 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); color: var(--muted); text-align: center; }
+    .retry { margin-top: 12px; padding: 10px 16px; border: 0; border-radius: 999px; background: var(--accent); color: white; font: inherit; font-weight: 750; cursor: pointer; }
+    .img-modal { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(20, 13, 10, .9); }
+    .img-modal.show { display: flex; }
+    .img-modal-content { display: block; max-width: min(92vw, 900px); max-height: 82vh; border-radius: 14px; object-fit: contain; }
+    .modal-close { position: absolute; top: max(14px, env(safe-area-inset-top)); right: 16px; width: 44px; height: 44px; border: 1px solid rgba(255,255,255,.7); border-radius: 50%; background: rgba(0,0,0,.35); color: white; font-size: 28px; line-height: 1; cursor: pointer; }
+    :focus-visible { outline: 3px solid #aa6d30; outline-offset: 3px; }
+    @media (max-width: 520px) {
+      .wrap { padding: 16px 14px 36px; }
+      .grid { gap: 10px; }
+      .category-nav { margin-right: -14px; margin-left: -14px; padding-right: 14px; padding-left: 14px; }
+      .item { gap: 12px; }
+      .thumb { width: 96px; height: 80px; border-radius: 12px; }
+      .name, .price { font-size: 17px; }
+      .desc { font-size: 14px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body id="top">
+  <main class="wrap">
+    <header class="brand"><h1 class="logo">Enise Pasta &amp; Cafe</h1></header>
+    <div class="grid" id="categoryGrid" aria-label="Menü kategorileri"></div>
+    <nav class="category-nav" id="categoryNav" aria-label="Kategoriler"></nav>
+    <div id="menuSections" aria-live="polite" aria-busy="true"><p class="status">Menü yükleniyor…</p></div>
+  </main>
+
+  <div id="imgModal" class="img-modal" role="dialog" aria-modal="true" aria-label="Ürün fotoğrafı" aria-hidden="true">
+    <button class="modal-close" type="button" aria-label="Fotoğrafı kapat">×</button>
+    <img id="imgModalImage" class="img-modal-content" src="" alt="">
+  </div>
+
+  <script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQL6TYFQG53aQeZNVyaAyT7EsZfLAF917h6odJynhaZtiWeUIizbIjwehu61I5EI6HTsYcFoxvTzW3_/pub?gid=0&single=true&output=csv";
+    const CATEGORY_ORDER = [
+      "Çorbalar", "Kahvaltılar", "Omlet ve Sahanda Yumurtalar", "Sandviçler", "Menemenler", "Gözlemeler", "Tostlar", "Atıştırmalıklar", "Burgerler", "Makarnalar", "Salatalar", "Bowl", "Balıklar", "Tavuk yemekleri", "Et yemekleri", "Baklavalar", "Tatlılar", "Kahveler", "Milkshake ve soğuk kahveler", "Soğuk içecekler", "Sıcak içecekler"
+    ];
+    const FALLBACK_IMG = "https://lh3.googleusercontent.com/d/1ZzTArsySsRjecAJHqedMi0ZVCVXCUnfx";
+
+    function slugifyTR(value) {
+      return String(value).toLowerCase().replaceAll("ı", "i").replaceAll("ğ", "g").replaceAll("ü", "u").replaceAll("ş", "s").replaceAll("ö", "o").replaceAll("ç", "c").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    }
+    function parseCSV(text) {
+      const rows = [];
+      let row = [], cell = "", quoted = false;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (ch === '"') {
+          if (quoted && text[i + 1] === '"') { cell += '"'; i++; }
+          else quoted = !quoted;
+        } else if (ch === "," && !quoted) {
+          row.push(cell.trim()); cell = "";
+        } else if ((ch === "\n" || ch === "\r") && !quoted) {
+          if (ch === "\r" && text[i + 1] === "\n") i++;
+          row.push(cell.trim());
+          if (row.some(value => value !== "")) rows.push(row);
+          row = []; cell = "";
+        } else cell += ch;
+      }
+      if (cell || row.length) { row.push(cell.trim()); if (row.some(value => value !== "")) rows.push(row); }
+      return rows;
+    }
+    function normHeader(value) { return slugifyTR(value).replaceAll("-", ""); }
+    function findColIndex(headers, candidates) {
+      const normalized = headers.map(normHeader);
+      for (const candidate of candidates) {
+        const index = normalized.indexOf(normHeader(candidate));
+        if (index !== -1) return index;
+      }
+      return -1;
+    }
+    function formatPrice(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "";
+      if (/tl|₺/i.test(raw)) return raw;
+      if (/^\d[\d.\s]*(,\d{1,2})?$/.test(raw)) {
+        let normalized = raw.replace(/[\s]/g, "");
+        if (normalized.includes(",")) normalized = normalized.replace(/[.]/g, "").replace(",", ".");
+        else if (/\.\d{3}$/.test(normalized)) normalized = normalized.replace(/[.]/g, "");
+        const amount = Number(normalized);
+        if (Number.isFinite(amount)) return new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2 }).format(amount) + " ₺";
+      }
+      return raw;
+    }
+    function safeImageUrl(value) {
+      try {
+        const url = new URL(value || FALLBACK_IMG, location.href);
+        return ["https:", "http:"].includes(url.protocol) ? url.href : FALLBACK_IMG;
+      } catch { return FALLBACK_IMG; }
+    }
+    function make(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined) element.textContent = text;
+      return element;
+    }
+    function showError(message) {
+      const target = document.getElementById("menuSections");
+      target.replaceChildren();
+      const box = make("div", "status");
+      box.append(document.createTextNode(message));
+      const retry = make("button", "retry", "Menüyü yeniden yükle");
+      retry.type = "button";
+      retry.addEventListener("click", loadMenu);
+      box.append(retry);
+      target.append(box);
+      target.setAttribute("aria-busy", "false");
+    }
+    function openImage(image) {
+      const modal = document.getElementById("imgModal");
+      const modalImage = document.getElementById("imgModalImage");
+      modalImage.src = image.currentSrc || image.src;
+      modalImage.alt = image.alt;
+      modal.classList.add("show");
+      modal.setAttribute("aria-hidden", "false");
+      document.querySelector(".modal-close").focus();
+    }
+    function closeImage() {
+      const modal = document.getElementById("imgModal");
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+      document.getElementById("imgModalImage").src = "";
+    }
+    document.querySelector(".modal-close").addEventListener("click", closeImage);
+    document.getElementById("imgModal").addEventListener("click", event => { if (event.target.id === "imgModal") closeImage(); });
+    document.addEventListener("keydown", event => { if (event.key === "Escape") closeImage(); });
+
+    async function loadMenu() {
+      const grid = document.getElementById("categoryGrid");
+      const nav = document.getElementById("categoryNav");
+      const sections = document.getElementById("menuSections");
+      sections.setAttribute("aria-busy", "true");
+      sections.replaceChildren(make("p", "status", "Menü yükleniyor…"));
+      try {
+        const response = await fetch(CSV_URL, { cache: "no-store" });
+        if (!response.ok) throw new Error("Menü sunucusuna ulaşılamadı.");
+        const rows = parseCSV(await response.text());
+        if (rows.length < 2) throw new Error("Menü verisi şu anda boş görünüyor.");
+        const headers = rows[0];
+        const iKat = findColIndex(headers, ["Kategori", "Category"]);
+        const iTip = findColIndex(headers, ["Tip", "Type"]);
+        const iAd = findColIndex(headers, ["UrunAdi", "ÜrünAdı", "Urun Adi", "Ürün adı", "Urun", "Ürün", "Ad"]);
+        const iAc = findColIndex(headers, ["Aciklama", "Açıklama", "UrunAciklama", "Ürün açıklaması", "Detay"]);
+        const iFy = findColIndex(headers, ["Fiyat", "Price"]);
+        const iRs = findColIndex(headers, ["ResimUrl", "Resim", "Gorsel", "Görsel", "Image", "ImageUrl"]);
+        if (iKat < 0 || iTip < 0) throw new Error("Menü verisinin kategori veya tip sütunu bulunamadı. Lütfen biraz sonra tekrar deneyin.");
+        const map = new Map();
+        for (const cells of rows.slice(1)) {
+          const category = (cells[iKat] || "").trim();
+          if (!category) continue;
+          const item = {
+            type: (cells[iTip] || "urun").trim().toLocaleLowerCase("tr-TR"),
+            name: iAd >= 0 ? (cells[iAd] || "").trim() : "",
+            description: iAc >= 0 ? (cells[iAc] || "").trim() : "",
+            price: iFy >= 0 ? (cells[iFy] || "").trim() : "",
+            image: iRs >= 0 ? (cells[iRs] || "").trim() : ""
+          };
+          if (!map.has(category)) map.set(category, []);
+          map.get(category).push(item);
+        }
+        grid.replaceChildren(); nav.replaceChildren(); sections.replaceChildren();
+        for (const category of CATEGORY_ORDER) {
+          const items = map.get(category) || [];
+          const cover = items.find(item => item.type === "kapak");
+          const firstProduct = items.find(item => item.type !== "kapak");
+          const coverURL = safeImageUrl((cover && cover.image) || (firstProduct && firstProduct.image));
+          const id = slugifyTR(category);
+
+          const card = make("a", "cat");
+          card.href = "#" + id;
+          card.setAttribute("aria-label", category + " kategorisine git");
+          const cardImage = make("img");
+          cardImage.src = coverURL;
+          cardImage.alt = category + " kategorisi";
+          cardImage.loading = "lazy";
+          cardImage.onerror = () => { cardImage.onerror = null; cardImage.src = FALLBACK_IMG; };
+          card.append(cardImage, make("span", "label", category));
+          grid.append(card);
+
+          const navLink = make("a", "", category);
+          navLink.href = "#" + id;
+          navLink.dataset.section = id;
+          nav.append(navLink);
+
+          const section = make("section", "section");
+          section.id = id;
+          const head = make("div", "section-head");
+          head.append(make("h2", "section-title", category));
+          const topLink = make("a", "toplink", "Menü başına dön");
+          topLink.href = "#top";
+          head.append(topLink);
+          section.append(head, make("div", "rule"));
+          const products = items.filter(item => item.type !== "kapak");
+          if (!products.length) section.append(make("div", "status", "Bu kategoride henüz ürün yok."));
+          for (const product of products) {
+            const article = make("article", "item");
+            const imageButton = make("button", "thumb");
+            imageButton.type = "button";
+            imageButton.setAttribute("aria-label", (product.name || category) + " fotoğrafını büyüt");
+            const image = make("img");
+            image.src = safeImageUrl(product.image);
+            image.alt = product.name ? product.name + " fotoğrafı" : category + " ürünü";
+            image.loading = "lazy";
+            image.onerror = () => { image.onerror = null; image.src = FALLBACK_IMG; };
+            imageButton.append(image);
+            imageButton.addEventListener("click", () => openImage(image));
+            const info = make("div", "info");
+            info.append(make("h3", "name", product.name));
+            if (product.description) info.append(make("p", "desc", product.description));
+            if (formatPrice(product.price)) info.append(make("p", "price", formatPrice(product.price)));
+            article.append(imageButton, info);
+            section.append(article);
+          }
+          sections.append(section);
+        }
+        const observer = new IntersectionObserver(entries => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            nav.querySelectorAll("a").forEach(link => {
+              if (link.dataset.section === entry.target.id) link.setAttribute("aria-current", "location");
+              else link.removeAttribute("aria-current");
+            });
+          }
+        }, { rootMargin: "-20% 0px -70% 0px" });
+        sections.querySelectorAll(".section").forEach(section => observer.observe(section));
+        sections.setAttribute("aria-busy", "false");
+      } catch (error) {
+        showError("Menü şu anda yüklenemedi. İnternet bağlantınızı kontrol edip yeniden deneyin.");
+        console.error("Menü yükleme hatası:", error);
+      }
+    }
+    loadMenu();
+  </script>
+</body>
+</html>
+
